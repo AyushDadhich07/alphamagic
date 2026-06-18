@@ -1930,9 +1930,9 @@ def _render_screen_results(df,title,lens,key_prefix="screen"):
         return "color:#22c55e;font-weight:500" if val>=0 else "color:#ef4444;font-weight:500"
 
     pn_cols=[l for l in lens_lbls if any(x in l for x in ["Growth","MOS","Upside","52W","Yield"])]
-    styled=disp.style.applymap(s_bg,subset=["Score"])
-    if "Alpha 100" in disp.columns: styled=styled.applymap(lambda v: s_bg(v/10 if isinstance(v,(int,float)) else v), subset=["Alpha 100"])
-    if pn_cols: styled=styled.applymap(pn,subset=pn_cols)
+    styled=disp.style.map(s_bg,subset=["Score"])
+    if "Alpha 100" in disp.columns: styled=styled.map(lambda v: s_bg(v/10 if isinstance(v,(int,float)) else v), subset=["Alpha 100"])
+    if pn_cols: styled=styled.map(pn,subset=pn_cols)
     styled=styled.format(fmt_all,na_rep="—")
     st.dataframe(styled,use_container_width=True,height=min(700,60+len(disp)*38))
 
@@ -2224,7 +2224,7 @@ def page_deep_dive():
             pf=pd.DataFrame(prows)
             def hl(row): return ["background:#0a1528;font-weight:700"]*len(row) if row[""]=="→" else [""]*len(row)
             def sc(v): return "color:#22c55e" if isinstance(v,(int,float)) and v>0 else "color:#ef4444" if isinstance(v,(int,float)) and v<0 else ""
-            st.dataframe(pf.style.apply(hl,axis=1).applymap(sc,subset=["Rev Gr"])
+            st.dataframe(pf.style.apply(hl,axis=1).map(sc,subset=["Rev Gr"])
                 .format({c:lambda v:"—" if not isinstance(v,(int,float)) else f"{v:.1f}"
                          for c in ["P/E","ROE","Op Mg","Rev Gr","D/E","CG-Proxy","Data"]}),
                 use_container_width=True,height=220)
@@ -2542,7 +2542,7 @@ def page_portfolio_lab():
             if isinstance(v,str) and "-" in v: return "color:#ef4444;font-weight:600"
             if isinstance(v,(int,float)): return "color:#22c55e" if v>=1 else ("color:#fbbf24" if v>=0 else "color:#ef4444")
             return ""
-        st.dataframe(idf.style.applymap(cn,subset=["3Y Ret","Sharpe"])
+        st.dataframe(idf.style.map(cn,subset=["3Y Ret","Sharpe"])
             .format({"Sharpe":lambda v:f"{v:.2f}" if isinstance(v,(int,float)) else "—"}),
             use_container_width=True,height=280)
 
@@ -2819,8 +2819,8 @@ def _render_radar(results):
         return ""
     def neg_col(v): return "color:#ef4444" if isinstance(v,(int,float)) and v<0 else ""
 
-    st.dataframe(df.style.applymap(risk_style,subset=["Risk Score"])
-        .applymap(neg_col,subset=["ROE%","Rev Gr%"])
+    st.dataframe(df.style.map(risk_style,subset=["Risk Score"])
+        .map(neg_col,subset=["ROE%","Rev Gr%"])
         .format({"ROE%":lambda v:f"{v:.1f}" if isinstance(v,(int,float)) else "—",
                  "Rev Gr%":lambda v:f"{v:+.1f}%" if isinstance(v,(int,float)) else "—",
                  "D/E":lambda v:f"{v:.0f}%" if isinstance(v,(int,float)) else "—"}),
