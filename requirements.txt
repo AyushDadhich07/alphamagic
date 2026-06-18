@@ -1,6 +1,6 @@
 streamlit 
 yfinance 
-pandas==2.1.4
+pandas
 numpy 
 plotly 
 scipy
